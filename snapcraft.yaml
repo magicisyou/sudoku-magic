@@ -3,7 +3,7 @@ base: core22
 version: "0.1.0"
 summary: Sudoku Game
 description: |
-  Sudku Game
+  Sudoku Game
 
 grade: stable
 confinement: strict
@@ -13,7 +13,7 @@ layout:
     bind: $SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/webkit2gtk-4.1
 
 apps:
-  appname:
+  sudoku-magic:
     command: usr/bin/sudoku-magic
     desktop: usr/share/applications/sudoku-magic.desktop
     extensions: [gnome]
@@ -52,7 +52,7 @@ parts:
     source: .
     override-build: |
       set -eu
-      npm install
-      npm run tauri build -- --bundles deb
+      yarn
+      yarn run tauri build -- --bundles deb
       dpkg -x src-tauri/target/release/bundle/deb/*.deb $SNAPCRAFT_PART_INSTALL/
       sed -i -e "s|Icon=sudoku-magic|Icon=/usr/share/icons/hicolor/32x32/apps/sudoku-magic.png|g" $SNAPCRAFT_PART_INSTALL/usr/share/applications/sudoku-magic.desktop
