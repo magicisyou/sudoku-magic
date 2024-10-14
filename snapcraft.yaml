@@ -51,8 +51,10 @@ parts:
       - libayatana-appindicator3-1
     source: .
     override-build: |
+      snapcraftctl build
+      rustup default stable
       set -eu
       yarn
-      yarn run tauri build -- --bundles deb
+      yarn run tauri build --bundles deb
       dpkg -x src-tauri/target/release/bundle/deb/*.deb $SNAPCRAFT_PART_INSTALL/
       sed -i -e "s|Icon=sudoku-magic|Icon=/usr/share/icons/hicolor/32x32/apps/sudoku-magic.png|g" $SNAPCRAFT_PART_INSTALL/usr/share/applications/sudoku-magic.desktop
