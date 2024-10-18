@@ -18,13 +18,13 @@
 
 <style scoped>
   a {
-    width: 120px;
-    height: 120px;
+    width: 85px;
+    height: 85px;
     border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 64px;
+    font-size: 44px;
     text-decoration: none;
     background: #0005;
     color: #d78137;
@@ -44,7 +44,7 @@
     position: absolute;
     top: 10px;
     left: 10px;
-    width: 20;
+    width: 20px;
     height: 20px;
   }
 </style>

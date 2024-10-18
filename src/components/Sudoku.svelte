@@ -2,75 +2,106 @@
   import Cell from "./atoms/Cell.svelte";
   import VSpace from "./atoms/VSpace.svelte";
   import HSpace from "./atoms/HSpace.svelte";
-  import FreeCell from "./atoms/FreeCell.svelte";
   import { invoke } from "@tauri-apps/api/core";
-  import { createStore, type Store } from "@tauri-apps/plugin-store";
+  import { createStore } from "@tauri-apps/plugin-store";
   import { gameLevel, unlockedLevel } from "../stores";
   import confetti from "canvas-confetti";
+  import { appDataDir as getAppDatDir } from "@tauri-apps/api/path";
 
-  $: game = { values: [[]] };
+  type CellType = { Fixed: number } | { Free: number | null };
 
-  let store: Store;
-
-  async function loadStore() {
-    store = await createStore("store.bin");
+  interface Sudoku {
+    values: CellType[][];
+    status: boolean;
   }
 
+  let sudoku: Sudoku;
+  let appDataDir: string;
+
   async function saveToStore(level: number) {
+    let store = await createStore("store.bin");
     await store.set("unlocked", { value: level });
     store.save();
   }
 
-  async function check() {
-    let result = await invoke("evaluate");
-    if (result) {
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 },
-      });
-      if ($gameLevel == $unlockedLevel) {
-        console.log("hj");
-        saveToStore($unlockedLevel + 1);
-      }
-    }
+  async function get_app_data_dir() {
+    appDataDir = await getAppDatDir();
   }
 
-  async function inputSync(this: HTMLInputElement) {
-    await invoke("input_sync", {
-      index: [Number(this.id[0]), Number(this.id[1])],
-      value: Number(this.value),
-    });
-    check();
+  async function evaluate() {
+    invoke<Sudoku>("evaluate", {
+      sudoku,
+      index: $gameLevel,
+      appDataDir,
+    })
+      .then((s) => {
+        sudoku = s;
+
+        if (sudoku.status) {
+          confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 },
+          });
+          if ($gameLevel == $unlockedLevel) {
+            saveToStore($unlockedLevel + 1);
+          }
+        }
+      })
+      .catch();
   }
 
   async function newGame() {
-    game = await invoke("new_game", { index: $gameLevel });
+    invoke<Sudoku>("new_game", { index: $gameLevel, appDataDir })
+      .then((s) => (sudoku = s))
+      .catch();
   }
 
-  loadStore();
-  newGame();
+  async function initialize() {
+    await get_app_data_dir();
+    await newGame();
+  }
+
+  async function clear() {
+    sudoku.values = sudoku.values.map((row) =>
+      row.map((cell) => ("Free" in cell ? { Free: null } : cell)),
+    );
+    sudoku.status = false;
+
+    evaluate();
+  }
+
+  initialize();
 </script>
 
 <div class="game">
-  {#each game.values as rows, i}
-    {#each rows as val, j}
-      {#if val == 0}
-        {#key game}
-          <FreeCell id={[i, j]} OnInput={inputSync} />
-        {/key}
-      {:else}
-        <Cell value={val} />
-      {/if}
-      {#if j == 2 || j == 5}
-        <VSpace />
-      {/if}
-      {#if j == 8 && (i == 2 || i == 5)}
-        <HSpace />
-      {/if}
+  {#if sudoku != null}
+    {#each sudoku.values as rows, i}
+      {#each rows as cell, j}
+        {#if "Free" in cell}
+          <input
+            type="number"
+            bind:value={sudoku.values[i][j].Free}
+            min="1"
+            max="9"
+            on:input={evaluate}
+          />
+        {:else if "Fixed" in cell}
+          <Cell value={cell.Fixed} />
+        {/if}
+        {#if j == 2 || j == 5}
+          <VSpace />
+        {/if}
+        {#if j == 8 && (i == 2 || i == 5)}
+          <HSpace />
+        {/if}
+      {/each}
     {/each}
-  {/each}
+  {:else}
+    <p>Loading....</p>
+  {/if}
 </div>
+<button class="btn" on:click={clear}>Clear</button>
 
 <style scoped>
   .game {
@@ -80,6 +111,51 @@
     justify-content: space-around;
     flex-flow: wrap;
     gap: 1px;
-    width: 462px;
+    width: 372px;
+    /* height: 372px; */
+  }
+
+  input {
+    width: 40px;
+    height: 40px;
+    border: none;
+    outline: none;
+    padding: 0;
+    margin: 0;
+    border-radius: 0;
+    background-color: #d79ebd;
+    text-align: center;
+    color: #0b1329;
+    font-family: serif;
+  }
+
+  input:focus {
+    background-color: #f7bedd;
+  }
+
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #0005;
+    color: #d78137;
+    border: none;
+    border-radius: 4px;
+    width: 60px;
+    height: 30px;
+    box-shadow: 2px 2px 10px #000;
+    &:hover {
+      background-color: #0003;
+    }
+
+    &:active {
+      background-color: #0002;
+    }
   }
 </style>

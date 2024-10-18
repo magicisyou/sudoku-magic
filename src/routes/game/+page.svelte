@@ -14,6 +14,7 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+    padding-top: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -21,10 +22,10 @@
 
   img {
     position: fixed;
-    top: 30px;
+    bottom: 30px;
     left: 50px;
-    width: 50px;
-    height: 50px;
+    width: 20px;
+    height: 20px;
     padding: 10px;
     border-radius: 50%;
     box-shadow: 0 0 16px #d78137;

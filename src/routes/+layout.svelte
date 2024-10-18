@@ -25,6 +25,8 @@
     position: fixed;
     top: 30px;
     /* left: 150px; */
+    width: 200px;
+    height: auto;
   }
 
   .main {
