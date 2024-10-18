@@ -48,13 +48,13 @@
 
   .buttons {
     /* width: 600px; */
-    padding: 25px;
+    padding: 10px;
     box-sizing: border-box;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 25px;
+    gap: 20px;
   }
 </style>

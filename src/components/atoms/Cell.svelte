@@ -6,8 +6,8 @@
 
 <style scoped>
   div {
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
     background-color: #333;
     color: #f6f6f6;
     display: flex;

@@ -3,7 +3,7 @@
 <style scoped>
   div {
     width: 1px;
-    height: 50px;
+    height: 40px;
     background-color: transparent;
   }
 </style>
