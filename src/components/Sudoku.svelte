@@ -127,6 +127,11 @@
     text-align: center;
     color: #0b1329;
     font-family: serif;
+    cursor: default;
+  }
+
+  input:hover {
+    background-color: #e7aecd;
   }
 
   input:focus {

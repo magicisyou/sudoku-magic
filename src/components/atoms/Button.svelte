@@ -30,6 +30,7 @@
     color: #d78137;
     box-shadow: 2px 2px 10px #000;
     position: relative;
+    cursor: default;
 
     &:hover {
       background-color: #0003;
