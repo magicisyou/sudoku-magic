@@ -22,16 +22,17 @@
 
   img {
     position: fixed;
-    bottom: 30px;
-    left: 50px;
-    width: 20px;
-    height: 20px;
-    padding: 10px;
-    border-radius: 50%;
-    box-shadow: 0 0 16px #d78137;
+    bottom: 20px;
+    right: 90px;
+    height: 25;
+    width: 25;
+    padding: 2.5px;
+    border-radius: 5px;
+    box-shadow: 2px 2px 10px #000;
+    cursor: default;
 
     &:hover {
-      box-shadow: 0 0 20px #d78137;
+      background-color: #0003;
     }
   }
 </style>

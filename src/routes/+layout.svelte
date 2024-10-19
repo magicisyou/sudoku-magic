@@ -19,13 +19,13 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     -webkit-text-size-adjust: 100%;
+    cursor: default;
   }
 
   img {
     position: fixed;
-    top: 30px;
-    /* left: 150px; */
-    width: 200px;
+    top: 26px;
+    width: 175px;
     height: auto;
   }
 

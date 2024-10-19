@@ -50,18 +50,13 @@ async fn save_to_file(
     index: usize,
     app_data_dir: &str,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    println!("1");
     let app_data_dir = Path::new(&app_data_dir);
     fs::create_dir_all(&app_data_dir)?;
     let data_path = app_data_dir.join(format!("data{index}.toml"));
-    println!("2");
 
     let toml_str = serde_json::to_string(&sudoku)?;
-    println!("4");
     let mut file = File::create(data_path)?;
-    println!("5");
     file.write_all(toml_str.as_bytes())?;
-    println!("3");
 
     Ok(())
 }
