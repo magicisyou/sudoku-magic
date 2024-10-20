@@ -22,11 +22,11 @@ struct GameState {
 async fn new_game(
     game_state: State<'_, GameState>,
     index: usize,
-    app_data_dir: String,
+    app_data_dir: &str,
 ) -> Result<Sudoku, ()> {
-    if let Some(sudoku) = load_from_file(index, &app_data_dir).await {
+    if let Some(sudoku) = load_from_file(index, app_data_dir).await {
         *game_state.sudoku.lock().unwrap() = sudoku;
-    } else if index < DATA.len() {
+    } else if index <= DATA.len() {
         *game_state.sudoku.lock().unwrap() = Sudoku::from_array(DATA[index - 1]);
     }
     Ok(*game_state.sudoku.lock().unwrap())
@@ -37,11 +37,24 @@ async fn evaluate(
     game_state: State<'_, GameState>,
     sudoku: Sudoku,
     index: usize,
-    app_data_dir: String,
+    app_data_dir: &str,
 ) -> Result<Sudoku, ()> {
     *game_state.sudoku.lock().unwrap() = sudoku;
     game_state.sudoku.lock().unwrap().evaluate();
-    let _ = save_to_file(&sudoku, index, &app_data_dir).await;
+    let _ = save_to_file(&sudoku, index, app_data_dir).await;
+    Ok(*game_state.sudoku.lock().unwrap())
+}
+
+#[tauri::command]
+async fn clear(
+    game_state: State<'_, GameState>,
+    index: usize,
+    app_data_dir: &str,
+) -> Result<Sudoku, ()> {
+    if index <= DATA.len() {
+        *game_state.sudoku.lock().unwrap() = Sudoku::from_array(DATA[index - 1]);
+    }
+    let _ = clear_file(index, app_data_dir).await;
     Ok(*game_state.sudoku.lock().unwrap())
 }
 
@@ -51,7 +64,7 @@ async fn save_to_file(
     app_data_dir: &str,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let app_data_dir = Path::new(&app_data_dir);
-    fs::create_dir_all(&app_data_dir)?;
+    fs::create_dir_all(app_data_dir)?;
     let data_path = app_data_dir.join(format!("data{index}.toml"));
 
     let toml_str = serde_json::to_string(&sudoku)?;
@@ -74,6 +87,15 @@ async fn load_from_file(index: usize, app_data_dir: &str) -> Option<Sudoku> {
     None
 }
 
+async fn clear_file(index: usize, app_data_dir: &str) -> std::io::Result<()> {
+    let app_data_dir = Path::new(app_data_dir);
+    let data_path = app_data_dir.join(format!("data{index}.toml"));
+
+    fs::remove_file(data_path)?;
+
+    Ok(())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -82,7 +104,7 @@ pub fn run() {
             sudoku: Mutex::new(Sudoku::new()),
         })
         .plugin(tauri_plugin_store::Builder::default().build())
-        .invoke_handler(tauri::generate_handler![new_game, evaluate])
+        .invoke_handler(tauri::generate_handler![new_game, evaluate, clear])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

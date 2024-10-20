@@ -1,6 +1,6 @@
 [package]
 name = "sudoku-magic"
-version = "0.2.1"
+version = "0.2.2"
 description = "Sudoku"
 authors = ["magicisyou"]
 edition = "2021"

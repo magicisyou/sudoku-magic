@@ -7,22 +7,13 @@
 
   async function loadStore() {
     store = await createStore("store.bin");
-    // await store.clear();
-    // await store.reset();
-    // await store.save();
     let val = await store.get<{ value: number }>("unlocked");
     if (val) {
-      // console.log($unlockedLevel);
       $unlockedLevel = val.value;
-      // console.log($unlockedLevel);
-      // await store.set("unlocked", { value: 1 });
     }
   }
 
-  // async function loadUnlockedValueFromStore() {}
-
   loadStore();
-  // loadUnlockedValueFromStore();
 </script>
 
 <div class="main">
@@ -47,7 +38,6 @@
   }
 
   .buttons {
-    /* width: 600px; */
     padding: 10px;
     box-sizing: border-box;
     display: flex;

@@ -63,12 +63,9 @@
   }
 
   async function clear() {
-    sudoku.values = sudoku.values.map((row) =>
-      row.map((cell) => ("Free" in cell ? { Free: null } : cell)),
-    );
-    sudoku.status = false;
-
-    evaluate();
+    invoke<Sudoku>("clear", { index: $gameLevel, appDataDir })
+      .then((s) => (sudoku = s))
+      .catch();
   }
 
   initialize();
@@ -81,7 +78,7 @@
         {#if "Free" in cell}
           <input
             type="number"
-            bind:value={sudoku.values[i][j].Free}
+            bind:value={cell.Free}
             min="1"
             max="9"
             on:input={evaluate}
@@ -112,7 +109,6 @@
     flex-flow: wrap;
     gap: 1px;
     width: 372px;
-    /* height: 372px; */
   }
 
   input {
