@@ -1,6 +1,6 @@
 name: sudoku-magic
 base: core22
-version: "0.2.1"
+version: "0.2.2"
 summary: Sudoku Game
 description: |
   Sudoku Game
